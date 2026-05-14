@@ -17,15 +17,12 @@
             padding: 0;
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* スクロールバー（ストロークバー）を完全に非表示にする */
+            /* スクロールバー（ストロークバー）を完全に非表示にする */
+            overflow: hidden !important; 
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
-        /* ブラウザ独自のスクロールバーを非表示にする（念のため） */
-        ::-webkit-scrollbar { display: none; }
-        * { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* jsPsychのコンテナを画面全体に広げ、中央揃えを強制 */
         .jspsych-content-wrapper {
@@ -34,12 +31,7 @@
             align-items: center !important;
             width: 100% !important;
             height: 100% !important;
-        }
-
-        .jspsych-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden !important; /* コンテナ内のスクロールも禁止 */
         }
 
         /* 刺激（文字）のスタイル */
@@ -54,7 +46,7 @@
         /* 教示のスタイル */
         .instructions {
             font-size: 24px;
-            line-height: 1.6;
+            line-height: 1.8;
             text-align: center;
             max-width: 800px;
         }
@@ -82,6 +74,7 @@
         const colors = ["red", "blue", "green"];
         const keyMap = { "red": "r", "blue": "b", "green": "g" };
 
+        // 全9パターンの刺激を生成
         let all_stimuli = [];
         for (let w of words) {
             for (let c of colors) {
@@ -106,10 +99,10 @@
             stimulus: `
                 <div class="instructions">
                     <p>画面に表示される文字の<strong>「色」</strong>を答えてください。</p>
-                    <div style="margin: 30px 0; font-size: 20px; border: 1px solid #ccc; padding: 20px; border-radius: 10px;">
-                        赤色の文字なら ... <strong>'r'</strong> キー<br>
-                        青色の文字なら ... <strong>'b'</strong> キー<br>
-                        緑色の文字なら ... <strong>'g'</strong> キー
+                    <div style="margin: 30px 0; font-size: 28px; border: 2px solid #eee; padding: 30px; border-radius: 15px; background-color: #fafafa;">
+                        <span style="color: red; font-weight: bold;">赤色</span>の文字なら ... <strong>'r'</strong> キー<br>
+                        <span style="color: blue; font-weight: bold;">青色</span>の文字なら ... <strong>'b'</strong> キー<br>
+                        <span style="color: green; font-weight: bold;">緑色</span>の文字なら ... <strong>'g'</strong> キー
                     </div>
                     <p>※正しい色のキーを押すまで次へ進みません。</p>
                     <p>準備ができたら<strong>スペースキー</strong>で開始します。</p>
@@ -129,7 +122,7 @@
             data: { task: 'fixation' }
         };
 
-        // メイン試行
+        // メイン試行（色に基づく反応）
         const trial = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: function() {
@@ -137,7 +130,7 @@
                 const color = jsPsych.timelineVariable('stimulus_color');
                 return `<div class="stimulus" style="color: ${color};">${text}</div>`;
             },
-            // 正解のキー以外は反応しないように制限
+            // 正しいキー以外は無効化する
             choices: function() {
                 return [jsPsych.timelineVariable('correct_response')];
             },
@@ -150,7 +143,6 @@
             }
         };
 
-        // 試行間隔 (ITI)
         const iti = {
             type: jsPsychHtmlKeyboardResponse,
             stimulus: '',
