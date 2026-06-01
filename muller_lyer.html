@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミュラー・リヤー錯視実験</title>
+    <script src="https://unpkg.com/jspsych@7.3.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-canvas-keyboard-response@1.1.2"></script>
+    <link href="https://unpkg.com/jspsych@7.3.3/css/jspsych.css" rel="stylesheet" type="text/css">
+    <style>
+        body { background-color: #f0f0f0; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .jspsych-display-element { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+        #jspsych-content { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        canvas { display: block; background-color: white; border: 1px solid #ccc; }
+    </style>
+</head>
+<body></body>
+<script>
+    const jsPsych = initJsPsych({ show_progress_bar: true });
+
+    const STD_LENGTH = 200;
+    const Y_OFFSET = 60;
+    const CENTER_X = 400;
+    const CENTER_Y = 300;
+    // 最新のデプロイURLに更新
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbzvE4JQAyyOYQxizYPkdX-c2zhlxkg_e0rp7SjZyUjqbe-7yURcXODSfKRz-o8Zwbclhg/exec';
+
+    const drawMullerLyer = (canvas, varLength, finAngle, finSize) => {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        const rad = finAngle * Math.PI / 180;
+        
+        const drawLine = (x, y, len, angle, isStd) => {
+            ctx.beginPath();
+            ctx.moveTo(x - len/2, y); ctx.lineTo(x + len/2, y);
+            const side = isStd ? 1 : -1;
+            [[x-len/2, side], [x+len/2, -side]].forEach(p => {
+                ctx.moveTo(p[0], y);
+                ctx.lineTo(p[0] + finSize * Math.cos(rad) * p[1], y - finSize * Math.sin(rad));
+                ctx.moveTo(p[0], y);
+                ctx.lineTo(p[0] + finSize * Math.cos(rad) * p[1], y + finSize * Math.sin(rad));
+            });
+            ctx.stroke();
+        };
+        drawLine(CENTER_X, CENTER_Y - Y_OFFSET, STD_LENGTH, finAngle, true);
+        drawLine(CENTER_X, CENTER_Y + Y_OFFSET, varLength, finAngle, false);
+    };
+
+    const timeline = [];
+    timeline.push({ type: jsPsychSurveyText, questions: [{prompt: "参加者ID", name: 'subject_id', required: true}] });
+
+    const conditions = jsPsych.randomization.shuffle([...Array(12)].map((_, i) => ({
+        angle: [15, 75][Math.floor(i/6)], size: [20, 50][Math.floor((i%6)/3)]
+    })));
+
+    conditions.forEach((cond, idx) => {
+        timeline.push({
+            type: jsPsychCanvasKeyboardResponse,
+            canvas_size: [600, 800],
+            stimulus: (c) => drawMullerLyer(c, jsPsych.getCurrentTrial().data.currentLength, cond.angle, cond.size),
+            data: { currentLength: 150, angle: cond.angle, wing_length: cond.size },
+            prompt: `<p>試行: ${idx + 1} / 12</p>`,
+            choices: [' '],
+            on_load: function() {
+                const trial = jsPsych.getCurrentTrial();
+                const canvas = document.querySelector('canvas');
+                const handleKey = (e) => {
+                    if (e.key === 'ArrowLeft') trial.data.currentLength = Math.max(50, trial.data.currentLength - 2);
+                    if (e.key === 'ArrowRight') trial.data.currentLength = Math.min(450, trial.data.currentLength + 2);
+                    drawMullerLyer(canvas, trial.data.currentLength, cond.angle, cond.size);
+                };
+                window.addEventListener('keydown', handleKey);
+                jsPsych.getCurrentTrial().on_finish = () => window.removeEventListener('keydown', handleKey);
+            }
+        });
+    });
+
+    timeline.push({
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: "送信中...",
+        on_load: async () => {
+            const subject_id = jsPsych.data.get().values()[0].response.subject_id;
+            const trialData = jsPsych.data.get().filter({trial_type: 'canvas-keyboard-response'}).values();
+            
+            const payload = trialData.map(d => ({
+                subject_id: subject_id,
+                angle: d.angle,
+                wing_length: d.wing_length,
+                pse: d.currentLength,
+                time: d.time_elapsed
+            }));
+
+            try {
+                await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                document.querySelector('#jspsych-content').innerHTML = "<p>実験終了：データを送信しました。</p>";
+            } catch (err) {
+                console.error(err);
+                document.querySelector('#jspsych-content').innerHTML = "<p>実験終了：送信エラーが発生しました。</p>";
+            }
+        }
+    });
+
+    jsPsych.run(timeline);
+</script>
+</html>
