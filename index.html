@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>尚絅学院大学 宗形陽菜の心理学実験室</title>
+    <!-- Google Fonts の読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* デザインシステム・変数定義 */
+        :root {
+            --primary-color: #4a7c59; /* 温かみのある深めのミントグリーン */
+            --primary-light: #68b0ab; /* 明るめのアクセントグリーン */
+            --primary-bg: #f4f7f6; /* 優しいミントがかった超淡色グレー */
+            --card-bg: #ffffff;
+            --text-main: #2f3e46; /* 柔らかい墨色 */
+            --text-muted: #65747c;
+            --accent-color: #e9c46a; /* 暖かみのあるゴールド */
+            --shadow: 0 10px 30px rgba(74, 124, 89, 0.08);
+            --shadow-hover: 0 20px 40px rgba(74, 124, 89, 0.15);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* リセットと全体レイアウト */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            line-height: 1.8;
+            letter-spacing: 0.03em;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 装飾的な背景のサークル */
+        .bg-decorations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-circle-1 {
+            position: absolute;
+            top: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(104, 176, 171, 0.1) 0%, rgba(244, 247, 246, 0) 70%);
+        }
+
+        .bg-circle-2 {
+            position: absolute;
+            bottom: -10%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 124, 89, 0.06) 0%, rgba(244, 247, 246, 0) 70%);
+        }
+
+        /* メインコンテナ */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ヘッダーセクション */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(74, 124, 89, 0.1);
+            color: var(--primary-color);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 40px);
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .introduction {
+            max-width: 680px;
+            margin: 0 auto;
+            font-size: clamp(15px, 2.5vw, 17px);
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* 実験カードのグリッドレイアウト */
+        .experiments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-bottom: 60px;
+        }
+
+        /* 実験カードのスタイル */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 40px 32px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(74, 124, 89, 0.05);
+        }
+
+        /* カード上部のやさしいライン */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+            opacity: 0.8;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(74, 124, 89, 0.15);
+        }
+
+        .card-header {
+            margin-bottom: 24px;
+        }
+
+        .experiment-id {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .card h2 {
+            font-size: 22px;
+            color: var(--text-main);
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .card p {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            flex-grow: 1;
+        }
+
+        /* ボタン（カード内リンク） */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px 24px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.15);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(104, 176, 171, 0.25);
+        }
+
+        /* 矢印アイコンを擬似要素で実装 */
+        .btn::after {
+            content: '→';
+            margin-left: 8px;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .btn:hover::after {
+            transform: translateX(4px);
+        }
+
+        /* フッターセクション */
+        footer {
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(74, 124, 89, 0.08);
+            margin-top: auto;
+        }
+
+        /* アニメーション用クラス */
+        .fade-in {
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 遅延アニメーション */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        /* スマートフォン向けの調整 */
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 16px;
+            }
+
+            header {
+                margin-bottom: 40px;
+            }
+
+            .card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 装飾背景 -->
+    <div class="bg-decorations">
+        <div class="bg-circle-1"></div>
+        <div class="bg-circle-2"></div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <!-- ヘッダーエリア -->
+        <header class="fade-in">
+            <span class="badge">Shokei Gakuin University</span>
+            <h1>尚絅学院大学 宗形陽菜の心理学実験室</h1>
+            <p class="introduction">
+                ご訪問ありがとうございます。以下の実験へのご協力をお願いいたします。<br>
+                各実験は数分で終わります。スマートフォンからもご参加いただけますので、リラックスして挑戦してみてください。
+            </p>
+        </header>
+
+        <!-- 実験カードグリッド -->
+        <main class="experiments-grid">
+            
+            <!-- カード0 -->
+            <article class="card fade-in delay-1">
+                <div class="card-header">
+                    <div class="experiment-id">Experiment 0</div>
+                    <h2>はじめてのWebページ</h2>
+                </div>
+                <p>第2回で作成した記念すべき「Hello World」のページです。</p>
+                <a href="hello_world.html" class="btn">Hello Worldを見る</a>
+            </article>
+
+            <!-- カード1 -->
+            <article class="card fade-in delay-2">
+                <div class="card-header">
+                    <div class="experiment-id">Experiment 1</div>
+                    <h2>ストループ課題</h2>
+                </div>
+                <p>「文字の意味」と「文字の色」の干渉を調べる、簡単なキーボード入力のテストです。（所要時間：約3分）</p>
+                <a href="stroop.html" class="btn">実験1に参加する</a>
+            </article>
+
+            <!-- カード2 -->
+            <article class="card fade-in delay-3">
+                <div class="card-header">
+                    <div class="experiment-id">Experiment 2</div>
+                    <h2>ミュラー・リヤー錯視</h2>
+                </div>
+                <p>図形の長さが違って見える錯覚を測る、スライダーを使った視覚のテストです。（所要時間：約2分）</p>
+                <a href="muller_lyer_final.html" class="btn">実験2に参加する</a>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; 2026 尚絅学院大学 宗形陽菜. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
