@@ -187,7 +187,15 @@
             flex-grow: 1;
         }
 
-        /* ボタン（カード内リンク） */
+        /* ボタンアクションのコンテナ（ミュラー・リヤー錯視用） */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        /* 基本ボタン（カード内リンク：メインアクション） */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -202,6 +210,7 @@
             font-weight: 500;
             transition: var(--transition);
             box-shadow: 0 4px 12px rgba(74, 124, 89, 0.15);
+            border: 2px solid transparent;
         }
 
         .btn:hover {
@@ -220,6 +229,60 @@
 
         .btn:hover::after {
             transform: translateX(4px);
+        }
+
+        /* サブアクションボタン（プレレジ用：白抜きデザイン） */
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 24px;
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(74, 124, 89, 0.05);
+            border-color: var(--primary-light);
+            color: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        /* リンク用アイコンを擬似要素で実装 */
+        .btn-secondary::after {
+            content: '↗';
+            margin-left: 6px;
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        /* 控えめなサブボタン/リンク（履歴用：最小限のデザイン） */
+        .btn-tertiary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 6px 12px;
+            background: none;
+            color: var(--text-muted);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            font-size: 13px;
+            font-weight: 400;
+            transition: var(--transition);
+        }
+
+        .btn-tertiary:hover {
+            color: var(--primary-light);
+            text-decoration-color: var(--primary-light);
+            transform: translateY(-1px);
         }
 
         /* フッターセクション */
@@ -319,7 +382,18 @@
                     <h2>ミュラー・リヤー錯視</h2>
                 </div>
                 <p>図形の長さが違って見える錯覚を測る、スライダーを使った視覚のテストです。（所要時間：約2分）</p>
-                <a href="muller_lyer_final.html" class="btn">実験2に参加する</a>
+                
+                <!-- ボタン配置の最適化グループ -->
+                <div class="btn-group">
+                    <!-- メインアクション：実験参加（目立つ色） -->
+                    <a href="muller_lyer_final.html" class="btn">実験2に参加する</a>
+                    
+                    <!-- サブアクション：プレレジ（白抜き枠線） -->
+                    <a href="https://github.com/Aki-Munakata/my-experiment/blob/main/preregistration.md" target="_blank" rel="noopener noreferrer" class="btn-secondary">プレレジを確認する</a>
+                    
+                    <!-- 控えめなリンク：変更履歴（小さめのテキストリンク） -->
+                    <a href="https://github.com/Aki-Munakata/my-experiment/commits/main/preregistration.md" target="_blank" rel="noopener noreferrer" class="btn-tertiary">変更履歴（証拠）を確認する</a>
+                </div>
             </article>
 
         </main>
